@@ -1,4 +1,4 @@
-# A small Terminal Emulator
+# A Small Terminal Emulator
 
 ### Purpose:
 
