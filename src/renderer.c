@@ -15,7 +15,7 @@ static SDL_Texture *get_glyph_texture(TerminalRenderer *renderer,
     SDL_Color foreground = {255, 255, 255, 255};
 
     SDL_Surface *surface =
-        TTF_RenderText_Blended(renderer->font, text, 1, foreground);
+        TTF_RenderText_Blended(renderer->font_path, text, 1, foreground);
 
     if (surface == NULL) {
         SDL_Log("Unable to render glpyh: %s", SDL_GetError());
@@ -39,16 +39,16 @@ bool terminal_renderer_init(TerminalRenderer *renderer,
                             float font_size) {
     memset(renderer, 0, sizeof(*renderer));
     renderer->sdl_renderer = sdl_renderer;
-    renderer->font = TTF_OpenFont(font_path, font_size);
-    if (renderer->font == NULL) {
+    renderer->font_path = TTF_OpenFont(font_path, font_size);
+    if (renderer->font_path == NULL) {
         SDL_Log("Unable to open font: %s", SDL_GetError());
         return false;
     }
-    if (!TTF_GetStringSize(renderer->font, "M", 1, &renderer->cell_width,
+    if (!TTF_GetStringSize(renderer->font_path, "M", 1, &renderer->cell_width,
                            &renderer->cell_height)) {
         SDL_Log("Unable to measure font: %s", SDL_GetError());
-        TTF_CloseFont(renderer->font);
-        renderer->font = NULL;
+        TTF_CloseFont(renderer->font_path);
+        renderer->font_path = NULL;
         return false;
     }
     return true;
@@ -83,6 +83,6 @@ void terminal_renderer_destroy(TerminalRenderer *renderer) {
     for (size_t i = 0; i < GLYPH_AMOUNT; i++) {
         SDL_DestroyTexture(renderer->glyphs[i].texture);
     }
-    TTF_CloseFont(renderer->font);
+    TTF_CloseFont(renderer->font_path);
     memset(renderer, 0, sizeof(*renderer));
 }

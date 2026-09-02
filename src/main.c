@@ -37,8 +37,9 @@ int main(int argc, char *argv[]) {
     static SDL_Window *window = NULL;
     static SDL_Renderer *renderer = NULL;
 
-    Terminal term;
-    terminal_init(&term);
+    Terminal terminal;
+    TerminalState terminal_state;
+    terminal_init(&terminal, &terminal_state);
 
     bool terminal_running = true;
 
@@ -115,7 +116,7 @@ int main(int argc, char *argv[]) {
                 read_master_fd(master_fd, pty_buffer, sizeof(pty_buffer));
             if (bytes_read > 0) {
                 for (size_t i = 0; i < bytes_read; i++) {
-                    terminal_put_char(&term, pty_buffer[i]);
+                    parse_char(&terminal, &terminal_state, pty_buffer[i]);
                 }
                 continue;
             }
@@ -131,7 +132,7 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        terminal_renderer_draw(&term_renderer, &term);
+        terminal_renderer_draw(&term_renderer, &terminal);
         SDL_RenderPresent(renderer);
     }
 
