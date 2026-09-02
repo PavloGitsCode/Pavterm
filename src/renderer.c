@@ -56,8 +56,19 @@ bool terminal_renderer_init(TerminalRenderer *renderer,
 
 void terminal_renderer_draw(TerminalRenderer *renderer,
                             const Terminal *terminal) {
+
+    // Background
     SDL_SetRenderDrawColor(renderer->sdl_renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer->sdl_renderer);
+
+    // Cursor
+    SDL_FRect cursor = {(float)terminal->cursor_col * renderer->cell_width,
+                        (float)terminal->cursor_row * renderer->cell_height,
+                        renderer->cell_width * 0.2, renderer->cell_height};
+    SDL_SetRenderDrawColor(renderer->sdl_renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer->sdl_renderer, &cursor);
+
+    // Render chars
     for (int r = 0; r < TERM_ROWS; r++) {
         for (int c = 0; c < TERM_COLS; c++) {
             char character = terminal->grid[r][c].character;
