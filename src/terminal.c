@@ -33,6 +33,10 @@ void parse_char(Terminal *terminal, TerminalState *terminal_state,
     case PARSER_GROUND:
         if (input_char == '\033') {
             terminal_state->parser_state = PARSER_ESCAPE;
+        } else if (input_char == '\r') {
+            terminal->cursor_col = 0;
+        } else if (input_char == '\n') {
+            terminal->cursor_row++;
         } else {
             display_char(terminal, input_char);
         }
@@ -56,9 +60,15 @@ void parse_char(Terminal *terminal, TerminalState *terminal_state,
             if (terminal_state->is_private_mode &&
                 terminal_state->csi_params[0] == 2004) {
                 terminal_state->bracketed_paste_enabled = true;
-
-                terminal_state->parser_state = PARSER_GROUND;
             }
+            terminal_state->parser_state = PARSER_GROUND;
+
+        } else if (input_char == 'l') {
+            if (terminal_state->is_private_mode &&
+                terminal_state->csi_params[0] == 2004) {
+                terminal_state->bracketed_paste_enabled = false;
+            }
+            terminal_state->parser_state = PARSER_GROUND;
         }
         break;
     }
